@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Especias & Blends — Gestión</title>
+<style>
+:root {
+  --bg:        #18120a;
+  --surface:   #221a10;
+  --surface2:  #2e2216;
+  --surface3:  #3a2c1e;
+  --accent:    #e8a045;
+  --accent2:   #c45c1a;
+  --green:     #6fcf6f;
+  --red:       #e05c5c;
+  --yellow:    #f0c040;
+  --text:      #f0e8d8;
+  --muted:     #9a8870;
+  --border:    #3e2e1e;
+  --radius:    12px;
+  --font:      'Segoe UI', system-ui, sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;}
+
+/* NAV */
+nav{background:var(--surface);border-bottom:2px solid var(--accent2);display:flex;align-items:center;gap:2px;padding:0 20px;position:sticky;top:0;z-index:100;flex-wrap:wrap;}
+.nav-brand{font-size:1.15rem;font-weight:800;color:var(--accent);padding:15px 16px 15px 0;margin-right:8px;border-right:1px solid var(--border);letter-spacing:.02em;white-space:nowrap;}
+.nav-btn{background:none;border:none;color:var(--muted);cursor:pointer;padding:16px 14px;font-size:.85rem;font-weight:600;letter-spacing:.04em;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .2s;white-space:nowrap;}
+.nav-btn:hover{color:var(--text);}
+.nav-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+
+/* LAYOUT */
+main{max-width:1160px;margin:0 auto;padding:28px 16px;}
+.page{display:none;}
+.page.active{display:block;}
+h2{font-size:1.4rem;font-weight:800;margin-bottom:22px;color:var(--accent);}
+h3{font-size:.75rem;font-weight:700;margin-bottom:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+@media(max-width:720px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}}
+
+/* STAT */
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;}
+.stat-label{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;}
+.stat-value{font-size:1.8rem;font-weight:900;}
+.stat-sub{font-size:.78rem;color:var(--muted);margin-top:3px;}
+.c-accent{color:var(--accent);}
+.c-green{color:var(--green);}
+.c-yellow{color:var(--yellow);}
+.c-red{color:var(--red);}
+
+/* FORMS */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.form-row.s1{grid-template-columns:1fr;}
+.form-row.s3{grid-template-columns:1fr 1fr 1fr;}
+@media(max-width:600px){.form-row,.form-row.s3{grid-template-columns:1fr;}}
+label{display:block;font-size:.75rem;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;}
+input,select,textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.9rem;padding:9px 12px;outline:none;transition:border-color .2s;font-family:var(--font);}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);}
+input[readonly]{opacity:.7;cursor:default;}
+select option{background:var(--surface2);}
+textarea{resize:vertical;min-height:60px;}
+
+/* BUTTONS */
+.btn{border:none;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:700;padding:9px 16px;transition:opacity .15s,transform .1s;display:inline-flex;align-items:center;gap:6px;letter-spacing:.02em;}
+.btn:active{transform:scale(.97);}
+.btn:hover{opacity:.85;}
+.btn-primary{background:var(--accent);color:#1a0e00;}
+.btn-accent2{background:var(--accent2);color:#fff;}
+.btn-green{background:var(--green);color:#0a1a0a;}
+.btn-red{background:var(--red);color:#fff;}
+.btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
+.btn-sm{padding:5px 10px;font-size:.78rem;}
+.btn-full{width:100%;justify-content:center;}
+
+/* TABLES */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:.87rem;}
+th{text-align:left;color:var(--muted);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:9px 12px;border-bottom:1px solid var(--border);}
+td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--surface2);}
+
+/* BADGES */
+.badge{display:inline-block;border-radius:20px;font-size:.7rem;font-weight:700;padding:2px 8px;}
+.bg{background:rgba(111,207,111,.14);color:var(--green);}
+.br{background:rgba(224,92,92,.14);color:var(--red);}
+.by{background:rgba(240,192,64,.14);color:var(--yellow);}
+.ba{background:rgba(232,160,69,.14);color:var(--accent);}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;padding:16px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+.modal-title{font-size:1.05rem;font-weight:800;color:var(--accent);}
+.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.5rem;line-height:1;}
+
+/* BLEND ACCORDION */
+.blend-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;}
+.blend-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;user-select:none;gap:12px;}
+.blend-header:hover{background:var(--surface2);}
+.blend-name{font-size:1rem;font-weight:700;color:var(--text);}
+.blend-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.blend-body{display:none;border-top:1px solid var(--border);padding:0;}
+.blend-body.open{display:block;}
+.blend-actions{display:flex;gap:6px;}
+
+/* SEARCH */
+.search-bar{position:relative;margin-bottom:16px;}
+.search-bar input{padding-left:36px;}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
+
+/* ALERT */
+.alert{border-radius:8px;padding:10px 14px;font-size:.86rem;margin-bottom:14px;display:none;}
+.alert.show{display:block;}
+.alert-ok{background:rgba(111,207,111,.12);border:1px solid rgba(111,207,111,.3);color:var(--green);}
+.alert-err{background:rgba(224,92,92,.12);border:1px solid rgba(224,92,92,.3);color:var(--red);}
+
+/* MISC */
+.flex{display:flex;}
+.items-center{align-items:center;}
+.justify-between{justify-content:space-between;}
+.gap-8{gap:8px;}
+.gap-12{gap:12px;}
+.mb-16{margin-bottom:16px;}
+.mb-20{margin-bottom:20px;}
+.mt-12{margin-top:12px;}
+.mt-16{margin-top:16px;}
+.text-right{text-align:right;}
+.text-muted{color:var(--muted);}
+.text-sm{font-size:.82rem;}
+.text-xs{font-size:.74rem;}
+.divider{border:none;border-top:1px solid var(--border);margin:14px 0;}
+.empty{text-align:center;padding:40px 16px;color:var(--muted);}
+.empty-icon{font-size:2.5rem;margin-bottom:10px;}
+
+/* INGREDIENT ROW */
+.ing-row{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px;align-items:center;margin-bottom:8px;}
+@media(max-width:500px){.ing-row{grid-template-columns:1fr 1fr;}}
+.ing-cost-preview{font-size:.82rem;color:var(--accent);font-weight:700;padding:9px 12px;background:var(--surface3);border-radius:8px;white-space:nowrap;}
+
+/* COST SUMMARY BOX */
+.cost-box{background:var(--surface3);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-top:12px;}
+.cost-row{display:flex;justify-content:space-between;font-size:.86rem;padding:3px 0;}
+.cost-row.total{font-size:1rem;font-weight:800;color:var(--accent);border-top:1px solid var(--border);margin-top:6px;padding-top:8px;}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:20px;background:var(--surface);border-radius:10px;padding:4px;border:1px solid var(--border);width:fit-content;}
+.tab{background:none;border:none;border-radius:7px;color:var(--muted);cursor:pointer;font-size:.84rem;font-weight:700;padding:8px 16px;transition:all .2s;letter-spacing:.02em;}
+.tab.active{background:var(--accent);color:#1a0e00;}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;right:24px;background:var(--accent);color:#1a0e00;font-weight:700;font-size:.88rem;padding:12px 20px;border-radius:10px;z-index:999;display:none;box-shadow:0 4px 20px rgba(0,0,0,.4);}
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<nav>
+  <div class="nav-brand">🌶 SpiceManager</div>
+  <button class="nav-btn active" onclick="goPage('costos',this)">Costos</button>
+  <button class="nav-btn" onclick="goPage('especias',this)">Especias</button>
+  <button class="nav-btn" onclick="goPage('blends',this)">Blends</button>
+  <button class="nav-btn" onclick="goPage('datos',this)" style="margin-left:auto">⚙ Datos</button>
+</nav>
+
+<main>
+
+<!-- ===== COSTOS ===== -->
+<div id="page-costos" class="page active">
+  <h2>Configuración de Costos</h2>
+  <div class="grid-2 mb-20">
+    <div class="card">
+      <h3>Envases</h3>
+      <div class="form-row">
+        <div><label>Envase Chico ($/unidad)</label><input type="number" id="costo-env-chico" value="1780" oninput="saveCostos()"></div>
+        <div><label>Envase Grande ($/unidad)</label><input type="number" id="costo-env-grande" value="1750" oninput="saveCostos()"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Packaging</h3>
+      <div class="form-row">
+        <div><label>Packaging Chico ($/unidad)</label><input type="number" id="costo-pkg-chico" value="0" oninput="saveCostos()"></div>
+        <div><label>Packaging Grande ($/unidad)</label><input type="number" id="costo-pkg-grande" value="0" oninput="saveCostos()"></div>
+      </div>
+    </div>
+  </div>
+  <div class="card mb-20">
+    <h3>Otros costos fijos por unidad vendida</h3>
+    <div class="form-row s3">
+      <div><label>Etiqueta ($/unidad)</label><input type="number" id="costo-etiqueta" value="0" oninput="saveCostos()"></div>
+      <div><label>Mano de obra ($/unidad)</label><input type="number" id="costo-mo" value="0" oninput="saveCostos()"></div>
+      <div><label>Otros ($/unidad)</label><input type="number" id="costo-otros" value="0" oninput="saveCostos()"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Resumen de costos fijos</h3>
+    <div id="resumen-costos" class="grid-2"></div>
+  </div>
+</div>
+
+<!-- ===== ESPECIAS ===== -->
+<div id="page-especias" class="page">
+  <div class="flex items-center justify-between mb-20">
+    <h2 style="margin:0">Especias / Materias Primas</h2>
+    <button class="btn btn-primary" onclick="openModalEspecia()">+ Nueva especia</button>
+  </div>
+  <div class="search-bar">
+    <span class="search-icon">🔍</span>
+    <input id="search-esp" placeholder="Buscar especia..." oninput="renderEspecias()">
+  </div>
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Nombre</th><th>Precio/kg</th><th>Precio/100g</th><th>Stock (g)</th><th>Estado</th><th></th></tr></thead>
+        <tbody id="tabla-especias"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BLENDS ===== -->
+<div id="page-blends" class="page">
+  <div class="flex items-center justify-between mb-20">
+    <h2 style="margin:0">Blends</h2>
+    <button class="btn btn-primary" onclick="openModalBlend()">+ Nuevo blend</button>
+  </div>
+  <div id="lista-blends"></div>
+</div>
+
+<!-- ===== DATOS ===== -->
+<div id="page-datos" class="page">
+  <h2>Gestión de Datos</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h3>Exportar</h3>
+      <p class="text-muted text-sm mb-16">Descargá un backup JSON con todos los datos.</p>
+      <button class="btn btn-green btn-full" onclick="exportar()">⬇ Exportar datos</button>
+    </div>
+    <div class="card">
+      <h3>Importar</h3>
+      <p class="text-muted text-sm mb-16"><strong>Reemplaza</strong> todos los datos actuales.</p>
+      <input type="file" id="file-import" accept=".json" style="display:none" onchange="importar(event)">
+      <button class="btn btn-ghost btn-full" onclick="document.getElementById('file-import').click()">⬆ Importar datos</button>
+    </div>
+  </div>
+  <div class="card mt-16">
+    <h3>Zona de peligro</h3>
+    <p class="text-muted text-sm mb-16">Borra todos los datos. No se puede deshacer.</p>
+    <button class="btn btn-red" onclick="borrarTodo()">🗑 Borrar todo</button>
+  </div>
+</div>
+
+</main>
+
+<!-- MODAL ESPECIA -->
+<div class="modal-overlay" id="modal-esp">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-esp-titulo">Nueva especia</span>
+      <button class="modal-close" onclick="closeModal('modal-esp')">×</button>
+    </div>
+    <div id="alert-esp" class="alert"></div>
+    <div class="form-row s1"><div><label>Nombre *</label><input id="esp-nombre" placeholder="Ej: Comino"></div></div>
+    <div class="form-row">
+      <div><label>Precio por Kilo ($) *</label><input id="esp-precio-kg" type="number" min="0" placeholder="0" oninput="calcEspPrecio100()"></div>
+      <div><label>Precio por 100g (calculado)</label><input id="esp-precio-100" readonly></div>
+    </div>
+    <div class="form-row">
+      <div><label>Stock actual (gramos)</label><input id="esp-stock" type="number" min="0" value="0"></div>
+      <div><label>Stock mínimo (gramos)</label><input id="esp-stock-min" type="number" min="0" value="500"></div>
+    </div>
+    <div class="flex gap-8 mt-16">
+      <button class="btn btn-primary btn-full" onclick="guardarEspecia()">Guardar especia</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL BLEND -->
+<div class="modal-overlay" id="modal-blend">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-blend-titulo">Nuevo Blend</span>
+      <button class="modal-close" onclick="closeModal('modal-blend')">×</button>
+    </div>
+    <div id="alert-blend" class="alert"></div>
+
+    <div class="form-row s1"><div><label>Nombre del blend *</label><input id="bl-nombre" placeholder="Ej: Garam Masala"></div></div>
+    <div class="form-row">
+      <div><label>Peso en envase chico (g)</label><input id="bl-peso-chico" type="number" min="0" placeholder="0" oninput="calcBlendCosts()"></div>
+      <div><label>Peso en envase grande (g)</label><input id="bl-peso-grande" type="number" min="0" placeholder="0" oninput="calcBlendCosts()"></div>
+    </div>
+    <div class="form-row">
+      <div><label>Precio venta chico ($)</label><input id="bl-pventa-chico" type="number" min="0" placeholder="0"></div>
+      <div><label>Precio venta grande ($)</label><input id="bl-pventa-grande" type="number" min="0" placeholder="0"></div>
+    </div>
+
+    <div class="divider"></div>
+    <h3>Ingredientes (fórmula para 1 kg)</h3>
+    <div id="blend-ings-rows"></div>
+    <button class="btn btn-ghost btn-sm mt-12" onclick="addIngRow()">+ Agregar especia</button>
+
+    <div class="cost-box" id="blend-cost-box">
+      <div class="cost-row"><span>Costo blend /kg</span><span id="bc-kg">$0</span></div>
+      <div class="cost-row"><span>Costo blend /100g</span><span id="bc-100">$0</span></div>
+      <div class="divider" style="margin:6px 0"></div>
+      <div class="cost-row"><span>Mat. prima chico</span><span id="bc-mp-c">$0</span></div>
+      <div class="cost-row"><span>+ Envase chico</span><span id="bc-env-c">$0</span></div>
+      <div class="cost-row"><span>+ Packaging chico</span><span id="bc-pkg-c">$0</span></div>
+      <div class="cost-row"><span>+ Otros</span><span id="bc-otros-c">$0</span></div>
+      <div class="cost-row total"><span>Costo total u. chica</span><span id="bc-total-c">$0</span></div>
+      <div class="divider" style="margin:6px 0"></div>
+      <div class="cost-row"><span>Mat. prima grande</span><span id="bc-mp-g">$0</span></div>
+      <div class="cost-row"><span>+ Envase grande</span><span id="bc-env-g">$0</span></div>
+      <div class="cost-row"><span>+ Packaging grande</span><span id="bc-pkg-g">$0</span></div>
+      <div class="cost-row"><span>+ Otros</span><span id="bc-otros-g">$0</span></div>
+      <div class="cost-row total"><span>Costo total u. grande</span><span id="bc-total-g">$0</span></div>
+    </div>
+
+    <div class="flex gap-8 mt-16">
+      <button class="btn btn-primary btn-full" onclick="guardarBlend()">Guardar blend</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR BLEND ENVASES/PRECIOS -->
+<div class="modal-overlay" id="modal-blend-edit">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header">
+      <span class="modal-title" id="mbe-titulo">Editar envases y precios</span>
+      <button class="modal-close" onclick="closeModal('modal-blend-edit')">×</button>
+    </div>
+    <div id="alert-be" class="alert"></div>
+    <div class="form-row">
+      <div><label>Peso envase chico (g)</label><input id="mbe-peso-c" type="number" min="0"></div>
+      <div><label>Peso envase grande (g)</label><input id="mbe-peso-g" type="number" min="0"></div>
+    </div>
+    <div class="form-row">
+      <div><label>Precio venta chico ($)</label><input id="mbe-pventa-c" type="number" min="0"></div>
+      <div><label>Precio venta grande ($)</label><input id="mbe-pventa-g" type="number" min="0"></div>
+    </div>
+    <div class="flex gap-8 mt-16">
+      <button class="btn btn-primary btn-full" onclick="guardarBlendEdit()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================== ID COUNTER =====================
+let _idCounter = Date.now();
+function nextId() { return ++_idCounter; }
+
+// ===================== DB =====================
+const KEY = 'spicemanager_v2';
+function getDB() {
+  const def = {
+    costos: { envChico:1780, envGrande:1750, pkgChico:0, pkgGrande:0, etiqueta:0, mo:0, otros:0 },
+    especias: [],
+    blends: []
+  };
+  try { return Object.assign(def, JSON.parse(localStorage.getItem(KEY)||'{}')); }
+  catch { return def; }
+}
+function saveDB(db) { localStorage.setItem(KEY, JSON.stringify(db)); }
+function getCostos() { return getDB().costos; }
+
+// ===================== UTILS =====================
+const fmt = n => '$' + Math.round(n||0).toLocaleString('es-AR');
+const fmtD = n => '$' + parseFloat(n||0).toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
+function toast(msg) {
+  const t=document.getElementById('toast'); t.textContent=msg; t.style.display='block';
+  setTimeout(()=>t.style.display='none', 2200);
+}
+function showAlert(id,msg,type='ok'){
+  const el=document.getElementById(id);
+  el.className=`alert alert-${type} show`; el.textContent=msg;
+  setTimeout(()=>el.classList.remove('show'),3000);
+}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+  m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});
+});
+
+// ===================== NAV =====================
+function goPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='costos') renderCostos();
+  if(name==='especias') renderEspecias();
+  if(name==='blends') renderBlends();
+}
+
+// ===================== COSTOS =====================
+function saveCostos() {
+  const db=getDB();
+  db.costos={
+    envChico: +document.getElementById('costo-env-chico').value||0,
+    envGrande: +document.getElementById('costo-env-grande').value||0,
+    pkgChico: +document.getElementById('costo-pkg-chico').value||0,
+    pkgGrande: +document.getElementById('costo-pkg-grande').value||0,
+    etiqueta: +document.getElementById('costo-etiqueta').value||0,
+    mo: +document.getElementById('costo-mo').value||0,
+    otros: +document.getElementById('costo-otros').value||0,
+  };
+  saveDB(db);
+  renderResumenCostos();
+}
+
+function renderCostos() {
+  const c=getCostos();
+  document.getElementById('costo-env-chico').value=c.envChico;
+  document.getElementById('costo-env-grande').value=c.envGrande;
+  document.getElementById('costo-pkg-chico').value=c.pkgChico;
+  document.getElementById('costo-pkg-grande').value=c.pkgGrande;
+  document.getElementById('costo-etiqueta').value=c.etiqueta;
+  document.getElementById('costo-mo').value=c.mo;
+  document.getElementById('costo-otros').value=c.otros;
+  renderResumenCostos();
+}
+
+function renderResumenCostos() {
+  const c=getCostos();
+  const fijosC = c.pkgChico + c.etiqueta + c.mo + c.otros;
+  const fijosG = c.pkgGrande + c.etiqueta + c.mo + c.otros;
+  document.getElementById('resumen-costos').innerHTML=`
+    <div class="cost-box">
+      <strong style="color:var(--accent);font-size:.85rem;display:block;margin-bottom:8px">ENVASE CHICO</strong>
+      <div class="cost-row"><span>Envase</span><span>${fmt(c.envChico)}</span></div>
+      <div class="cost-row"><span>Packaging</span><span>${fmt(c.pkgChico)}</span></div>
+      <div class="cost-row"><span>Etiqueta</span><span>${fmt(c.etiqueta)}</span></div>
+      <div class="cost-row"><span>Mano de obra</span><span>${fmt(c.mo)}</span></div>
+      <div class="cost-row"><span>Otros</span><span>${fmt(c.otros)}</span></div>
+      <div class="cost-row total"><span>Total fijos/u</span><span>${fmt(c.envChico+fijosC)}</span></div>
+    </div>
+    <div class="cost-box">
+      <strong style="color:var(--accent);font-size:.85rem;display:block;margin-bottom:8px">ENVASE GRANDE</strong>
+      <div class="cost-row"><span>Envase</span><span>${fmt(c.envGrande)}</span></div>
+      <div class="cost-row"><span>Packaging</span><span>${fmt(c.pkgGrande)}</span></div>
+      <div class="cost-row"><span>Etiqueta</span><span>${fmt(c.etiqueta)}</span></div>
+      <div class="cost-row"><span>Mano de obra</span><span>${fmt(c.mo)}</span></div>
+      <div class="cost-row"><span>Otros</span><span>${fmt(c.otros)}</span></div>
+      <div class="cost-row total"><span>Total fijos/u</span><span>${fmt(c.envGrande+fijosG)}</span></div>
+    </div>
+  `;
+}
+
+// ===================== ESPECIAS =====================
+let editingEspId = null;
+
+function calcEspPrecio100() {
+  const kg = parseFloat(document.getElementById('esp-precio-kg').value)||0;
+  document.getElementById('esp-precio-100').value = fmt(kg/10);
+}
+
+function openModalEspecia(id=null) {
+  editingEspId=id;
+  document.getElementById('modal-esp-titulo').textContent = id?'Editar especia':'Nueva especia';
+  if(id) {
+    const esp=getDB().especias.find(e=>e.id===id);
+    if(esp){
+      document.getElementById('esp-nombre').value=esp.nombre;
+      document.getElementById('esp-precio-kg').value=esp.precioKg;
+      document.getElementById('esp-stock').value=esp.stock||0;
+      document.getElementById('esp-stock-min').value=esp.stockMin||500;
+      calcEspPrecio100();
+    }
+  } else {
+    document.getElementById('esp-nombre').value='';
+    document.getElementById('esp-precio-kg').value='';
+    document.getElementById('esp-precio-100').value='';
+    document.getElementById('esp-stock').value='0';
+    document.getElementById('esp-stock-min').value='500';
+  }
+  openModal('modal-esp');
+}
+
+function guardarEspecia() {
+  const nombre=document.getElementById('esp-nombre').value.trim();
+  const precioKg=parseFloat(document.getElementById('esp-precio-kg').value)||0;
+  if(!nombre){showAlert('alert-esp','El nombre es obligatorio.','err');return;}
+  const db=getDB();
+  const esp={nombre,precioKg,stock:+document.getElementById('esp-stock').value||0,stockMin:+document.getElementById('esp-stock-min').value||500};
+  if(editingEspId){esp.id=editingEspId;const i=db.especias.findIndex(e=>e.id===editingEspId);if(i>=0)db.especias[i]=esp;}
+  else{esp.id=nextId();db.especias.push(esp);}
+  saveDB(db);
+  toast(editingEspId?'Especia actualizada ✓':'Especia creada ✓');
+  setTimeout(()=>closeModal('modal-esp'),700);
+  renderEspecias();
+}
+
+function eliminarEspecia(id){
+  if(!confirm('¿Eliminar esta especia?'))return;
+  const db=getDB(); db.especias=db.especias.filter(e=>e.id!==id); saveDB(db);
+  renderEspecias(); toast('Especia eliminada');
+}
+
+function renderEspecias(){
+  const q=(document.getElementById('search-esp')?.value||'').toLowerCase();
+  const db=getDB();
+  const list=db.especias.filter(e=>e.nombre.toLowerCase().includes(q));
+  const tbody=document.getElementById('tabla-especias');
+  if(!list.length){tbody.innerHTML=`<tr><td colspan="6"><div class="empty"><div class="empty-icon">🌿</div><p>No hay especias. Agregá una.</p></div></td></tr>`;return;}
+  tbody.innerHTML=list.map(e=>{
+    const bajo=e.stock<=e.stockMin;
+    return `<tr>
+      <td><strong>${e.nombre}</strong></td>
+      <td>${fmt(e.precioKg)}</td>
+      <td class="c-accent">${fmt(e.precioKg/10)}</td>
+      <td class="${bajo?'c-red':'c-green'}">${(e.stock||0).toLocaleString('es-AR')} g</td>
+      <td>${bajo?'<span class="badge br">Stock bajo</span>':'<span class="badge bg">OK</span>'}</td>
+      <td class="text-right" style="white-space:nowrap">
+        <button class="btn btn-ghost btn-sm" onclick="openModalEspecia(${e.id})">✏</button>
+        <button class="btn btn-red btn-sm" onclick="eliminarEspecia(${e.id})">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ===================== BLEND MODAL =====================
+let blendIngRows = [];
+let editingBlendId = null;
+
+function openModalBlend(id=null){
+  editingBlendId=id;
+  document.getElementById('modal-blend-titulo').textContent=id?'Editar blend':'Nuevo Blend';
+  blendIngRows=[];
+  if(id){
+    const bl=getDB().blends.find(b=>b.id===id);
+    if(bl){
+      document.getElementById('bl-nombre').value=bl.nombre;
+      document.getElementById('bl-peso-chico').value=bl.pesoChico||0;
+      document.getElementById('bl-peso-grande').value=bl.pesoGrande||0;
+      document.getElementById('bl-pventa-chico').value=bl.pVentaChico||0;
+      document.getElementById('bl-pventa-grande').value=bl.pVentaGrande||0;
+      blendIngRows=bl.ingredientes.map(i=>({...i,_rowId:nextId()}));
+    }
+  } else {
+    document.getElementById('bl-nombre').value='';
+    document.getElementById('bl-peso-chico').value='';
+    document.getElementById('bl-peso-grande').value='';
+    document.getElementById('bl-pventa-chico').value='';
+    document.getElementById('bl-pventa-grande').value='';
+    blendIngRows=[{_rowId:nextId(),espId:null,gramos:0}];
+  }
+  renderIngRows();
+  calcBlendCosts();
+  openModal('modal-blend');
+}
+
+function addIngRow(){
+  blendIngRows.push({_rowId:nextId(),espId:null,gramos:0});
+  renderIngRows();
+}
+
+function removeIngRow(rowId){
+  blendIngRows=blendIngRows.filter(r=>r._rowId!==rowId);
+  renderIngRows();
+  calcBlendCosts();
+}
+
+function renderIngRows(){
+  const especias=getDB().especias;
+  const optsEsp=especias.map(e=>`<option value="${e.id}">${e.nombre} (${fmt(e.precioKg)}/kg)</option>`).join('');
+  document.getElementById('blend-ings-rows').innerHTML=blendIngRows.map(r=>`
+    <div class="ing-row" id="row-${r._rowId}">
+      <select onchange="ingRowChange(${r._rowId},'espId',this.value)">
+        <option value="">-- Especia --</option>${optsEsp}
+      </select>
+      <input type="number" min="0" max="1000" placeholder="gramos" value="${r.gramos||''}"
+        onchange="ingRowChange(${r._rowId},'gramos',+this.value)" oninput="ingRowChange(${r._rowId},'gramos',+this.value)">
+      <div class="ing-cost-preview" id="ic-${r._rowId}">$0</div>
+      <button class="btn btn-red btn-sm" onclick="removeIngRow(${r._rowId})">×</button>
+    </div>
+  `).join('');
+  // Restore selected values
+  blendIngRows.forEach(r=>{
+    const sel=document.querySelector(`#row-${r._rowId} select`);
+    if(sel&&r.espId) sel.value=r.espId;
+    updateIngCostPreview(r);
+  });
+}
+
+function ingRowChange(rowId, field, val){
+  const r=blendIngRows.find(x=>x._rowId===rowId);
+  if(r){ r[field]=val; updateIngCostPreview(r); calcBlendCosts(); }
+}
+
+function updateIngCostPreview(r){
+  const el=document.getElementById('ic-'+r._rowId);
+  if(!el)return;
+  if(!r.espId||!r.gramos){el.textContent='$0';return;}
+  const esp=getDB().especias.find(e=>e.id==r.espId);
+  if(!esp){el.textContent='$0';return;}
+  el.textContent=fmt((esp.precioKg/1000)*r.gramos);
+}
+
+function calcBlendCosts(){
+  const db=getDB(); const c=db.costos;
+  // Mat prima /kg
+  let costoKg=0;
+  let totalGramos=0;
+  blendIngRows.forEach(r=>{
+    if(!r.espId||!r.gramos)return;
+    const esp=db.especias.find(e=>e.id==r.espId);
+    if(!esp)return;
+    costoKg+=(esp.precioKg/1000)*r.gramos;
+    totalGramos+=+r.gramos;
+  });
+  const costo100g=costoKg/10;
+  const pesoChico=+document.getElementById('bl-peso-chico')?.value||0;
+  const pesoGrande=+document.getElementById('bl-peso-grande')?.value||0;
+  const mpChico=(costoKg/1000)*pesoChico;
+  const mpGrande=(costoKg/1000)*pesoGrande;
+  const fijosC=c.envChico+c.pkgChico+c.etiqueta+c.mo+c.otros;
+  const fijosG=c.envGrande+c.pkgGrande+c.etiqueta+c.mo+c.otros;
+  const totalC=mpChico+fijosC;
+  const totalG=mpGrande+fijosG;
+
+  document.getElementById('bc-kg').textContent=fmt(costoKg);
+  document.getElementById('bc-100').textContent=fmt(costo100g);
+  document.getElementById('bc-mp-c').textContent=fmt(mpChico);
+  document.getElementById('bc-env-c').textContent=fmt(c.envChico);
+  document.getElementById('bc-pkg-c').textContent=fmt(c.pkgChico+c.etiqueta+c.mo+c.otros);
+  document.getElementById('bc-otros-c').textContent=fmt(0);
+  document.getElementById('bc-total-c').textContent=fmt(totalC);
+  document.getElementById('bc-mp-g').textContent=fmt(mpGrande);
+  document.getElementById('bc-env-g').textContent=fmt(c.envGrande);
+  document.getElementById('bc-pkg-g').textContent=fmt(c.pkgGrande+c.etiqueta+c.mo+c.otros);
+  document.getElementById('bc-otros-g').textContent=fmt(0);
+  document.getElementById('bc-total-g').textContent=fmt(totalG);
+
+  // % warning
+  const gramosLabel=totalGramos>0?`<span class="text-xs" style="color:${Math.abs(totalGramos-1000)<1?'var(--green)':'var(--yellow)'}">Total: ${totalGramos}g de 1000g</span>`:'';
+  const titleEl=document.getElementById('modal-blend-titulo');
+  // Append grams info
+}
+
+function guardarBlend(){
+  const nombre=document.getElementById('bl-nombre').value.trim();
+  if(!nombre){showAlert('alert-blend','El nombre es obligatorio.','err');return;}
+  const ings=blendIngRows.filter(r=>r.espId&&r.gramos>0).map(r=>{
+    const esp=getDB().especias.find(e=>e.id==r.espId);
+    return{espId:+r.espId,nombre:esp?.nombre||'',gramos:+r.gramos,precioKg:esp?.precioKg||0};
+  });
+  if(!ings.length){showAlert('alert-blend','Agregá al menos una especia con cantidad.','err');return;}
+  const db=getDB();
+  const bl={
+    nombre,
+    ingredientes:ings,
+    pesoChico:+document.getElementById('bl-peso-chico').value||0,
+    pesoGrande:+document.getElementById('bl-peso-grande').value||0,
+    pVentaChico:+document.getElementById('bl-pventa-chico').value||0,
+    pVentaGrande:+document.getElementById('bl-pventa-grande').value||0,
+  };
+  if(editingBlendId){bl.id=editingBlendId;const i=db.blends.findIndex(b=>b.id===editingBlendId);if(i>=0)db.blends[i]=bl;}
+  else{bl.id=nextId();db.blends.push(bl);}
+  saveDB(db);
+  toast(editingBlendId?'Blend actualizado ✓':'Blend creado ✓');
+  setTimeout(()=>closeModal('modal-blend'),700);
+  renderBlends();
+}
+
+// ===================== BLEND EDIT (envases/precios) =====================
+let editingBEId=null;
+function openModalBlendEdit(id){
+  editingBEId=id;
+  const bl=getDB().blends.find(b=>b.id===id);
+  if(!bl)return;
+  document.getElementById('mbe-titulo').textContent='Editar: '+bl.nombre;
+  document.getElementById('mbe-peso-c').value=bl.pesoChico||0;
+  document.getElementById('mbe-peso-g').value=bl.pesoGrande||0;
+  document.getElementById('mbe-pventa-c').value=bl.pVentaChico||0;
+  document.getElementById('mbe-pventa-g').value=bl.pVentaGrande||0;
+  openModal('modal-blend-edit');
+}
+function guardarBlendEdit(){
+  const db=getDB();
+  const i=db.blends.findIndex(b=>b.id===editingBEId);
+  if(i<0)return;
+  db.blends[i].pesoChico=+document.getElementById('mbe-peso-c').value||0;
+  db.blends[i].pesoGrande=+document.getElementById('mbe-peso-g').value||0;
+  db.blends[i].pVentaChico=+document.getElementById('mbe-pventa-c').value||0;
+  db.blends[i].pVentaGrande=+document.getElementById('mbe-pventa-g').value||0;
+  saveDB(db);
+  toast('Blend actualizado ✓');
+  setTimeout(()=>closeModal('modal-blend-edit'),700);
+  renderBlends();
+}
+
+// ===================== BLEND LIST =====================
+function toggleBlend(id){
+  const body=document.getElementById('bb-'+id);
+  const arrow=document.getElementById('arr-'+id);
+  body.classList.toggle('open');
+  arrow.textContent=body.classList.contains('open')?'▲':'▼';
+}
+
+function calcBlendCostData(bl, c){
+  const costoKg=bl.ingredientes.reduce((s,i)=>(s+(i.precioKg/1000)*i.gramos),0);
+  const costo100g=costoKg/10;
+  const mpChico=(costoKg/1000)*(bl.pesoChico||0);
+  const mpGrande=(costoKg/1000)*(bl.pesoGrande||0);
+  const fijosC=c.envChico+c.pkgChico+c.etiqueta+c.mo+c.otros;
+  const fijosG=c.envGrande+c.pkgGrande+c.etiqueta+c.mo+c.otros;
+  return{costoKg,costo100g,mpChico,mpGrande,totalC:mpChico+fijosC,totalG:mpGrande+fijosG,fijosC,fijosG};
+}
+
+function renderBlends(){
+  const db=getDB(); const c=db.costos;
+  const el=document.getElementById('lista-blends');
+  if(!db.blends.length){el.innerHTML=`<div class="empty"><div class="empty-icon">🫙</div><p>No hay blends aún. Creá el primero.</p></div>`;return;}
+  el.innerHTML=db.blends.map(bl=>{
+    const cd=calcBlendCostData(bl,c);
+    const margenC=bl.pVentaChico?((bl.pVentaChico-cd.totalC)/bl.pVentaChico*100):null;
+    const margenG=bl.pVentaGrande?((bl.pVentaGrande-cd.totalG)/bl.pVentaGrande*100):null;
+    const totalGramos=bl.ingredientes.reduce((s,i)=>s+i.gramos,0);
+
+    return `<div class="blend-card">
+      <div class="blend-header" onclick="toggleBlend(${bl.id})">
+        <div>
+          <div class="blend-name">${bl.nombre}</div>
+          <div class="blend-meta" style="margin-top:4px">
+            <span class="text-xs text-muted">Fórmula: ${totalGramos}g /kg</span>
+            <span class="badge ba">Costo/kg: ${fmt(cd.costoKg)}</span>
+            <span class="badge ba">Costo/100g: ${fmt(cd.costo100g)}</span>
+          </div>
+        </div>
+        <div class="blend-actions" onclick="event.stopPropagation()">
+          <button class="btn btn-ghost btn-sm" onclick="openModalBlendEdit(${bl.id})">✏ Precios</button>
+          <button class="btn btn-ghost btn-sm" onclick="openModalBlend(${bl.id})">📝 Fórmula</button>
+          <button class="btn btn-red btn-sm" onclick="eliminarBlend(${bl.id})">🗑</button>
+          <span id="arr-${bl.id}" style="color:var(--muted);font-size:.8rem;padding:4px">▼</span>
+        </div>
+      </div>
+      <div class="blend-body" id="bb-${bl.id}">
+        <div style="padding:16px 18px">
+          <!-- Ingredientes -->
+          <h3 style="margin-bottom:10px">Ingredientes (fórmula /1kg)</h3>
+          <div class="table-wrap" style="margin-bottom:16px">
+            <table>
+              <thead><tr><th>Especia</th><th>Gramos</th><th>%</th><th>Costo</th></tr></thead>
+              <tbody>
+                ${bl.ingredientes.map(i=>`<tr>
+                  <td>${i.nombre}</td>
+                  <td>${i.gramos}g</td>
+                  <td class="text-muted">${Math.round(i.gramos/10)}%</td>
+                  <td class="c-accent">${fmt((i.precioKg/1000)*i.gramos)}</td>
+                </tr>`).join('')}
+                <tr style="font-weight:700">
+                  <td>TOTAL</td>
+                  <td>${totalGramos}g</td>
+                  <td>${Math.round(totalGramos/10)}%</td>
+                  <td class="c-accent">${fmt(cd.costoKg)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Envases -->
+          <div class="grid-2">
+            <div class="cost-box">
+              <strong style="color:var(--accent);font-size:.82rem;display:block;margin-bottom:8px">ENVASE CHICO ${bl.pesoChico?'('+bl.pesoChico+'g)':'— sin peso'}</strong>
+              <div class="cost-row"><span>Mat. prima</span><span>${fmt(cd.mpChico)}</span></div>
+              <div class="cost-row"><span>Envase + extras</span><span>${fmt(cd.fijosC)}</span></div>
+              <div class="cost-row total"><span>Costo total</span><span>${fmt(cd.totalC)}</span></div>
+              ${bl.pVentaChico?`<div class="cost-row" style="margin-top:6px"><span>Precio venta</span><span style="color:var(--green)">${fmt(bl.pVentaChico)}</span></div>
+              <div class="cost-row"><span>Margen</span><span style="color:${margenC>0?'var(--green)':'var(--red)'}">${margenC!==null?Math.round(margenC)+'%':'—'}</span></div>`:'<div class="cost-row text-muted" style="margin-top:4px"><span colspan="2">Sin precio de venta</span><span></span></div>'}
+            </div>
+            <div class="cost-box">
+              <strong style="color:var(--accent);font-size:.82rem;display:block;margin-bottom:8px">ENVASE GRANDE ${bl.pesoGrande?'('+bl.pesoGrande+'g)':'— sin peso'}</strong>
+              <div class="cost-row"><span>Mat. prima</span><span>${fmt(cd.mpGrande)}</span></div>
+              <div class="cost-row"><span>Envase + extras</span><span>${fmt(cd.fijosG)}</span></div>
+              <div class="cost-row total"><span>Costo total</span><span>${fmt(cd.totalG)}</span></div>
+              ${bl.pVentaGrande?`<div class="cost-row" style="margin-top:6px"><span>Precio venta</span><span style="color:var(--green)">${fmt(bl.pVentaGrande)}</span></div>
+              <div class="cost-row"><span>Margen</span><span style="color:${margenG>0?'var(--green)':'var(--red)'}">${margenG!==null?Math.round(margenG)+'%':'—'}</span></div>`:'<div class="cost-row text-muted" style="margin-top:4px"><span>Sin precio de venta</span><span></span></div>'}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function eliminarBlend(id){
+  if(!confirm('¿Eliminar este blend?'))return;
+  const db=getDB(); db.blends=db.blends.filter(b=>b.id!==id); saveDB(db);
+  renderBlends(); toast('Blend eliminado');
+}
+
+// ===================== DATOS =====================
+function exportar(){
+  const blob=new Blob([JSON.stringify(getDB(),null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`spicemanager_${new Date().toISOString().slice(0,10)}.json`; a.click();
+}
+function importar(e){
+  const file=e.target.files[0]; if(!file)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      if(!confirm(`¿Importar ${data.especias?.length||0} especias y ${data.blends?.length||0} blends? Se reemplazarán los datos actuales.`))return;
+      saveDB(data); toast('Datos importados ✓'); renderBlends();
+    }catch{alert('Archivo inválido.');}
+  };
+  r.readAsText(file); e.target.value='';
+}
+function borrarTodo(){
+  if(!confirm('¿Borrar TODOS los datos?'))return;
+  if(!confirm('Segunda confirmación: ¿borrar definitivamente?'))return;
+  localStorage.removeItem(KEY); toast('Datos borrados'); renderBlends();
+}
+
+// ===================== SEED DATA =====================
+function seedIfEmpty(){
+  const db=getDB();
+  if(db.especias.length>0)return;
+
+  const especiasData=[
+    {nombre:'Ajo polvo',precioKg:17000},{nombre:'Ajo escama',precioKg:0},{nombre:'Ajo grano',precioKg:0},
+    {nombre:'Cebolla en polvo',precioKg:19200},{nombre:'Cebolla en escamas',precioKg:0},
+    {nombre:'Paprika',precioKg:17000},{nombre:'Pimentón en escamas',precioKg:0},{nombre:'Paprika ahumada',precioKg:0},
+    {nombre:'Orégano',precioKg:20000},{nombre:'Albahaca',precioKg:26400},{nombre:'Tomillo',precioKg:26500},
+    {nombre:'Laurel',precioKg:31500},{nombre:'Romero',precioKg:26500},{nombre:'Canela',precioKg:95000},
+    {nombre:'Canela en polvo',precioKg:34000},{nombre:'Clavos',precioKg:29000},{nombre:'Clavos polvo',precioKg:32000},
+    {nombre:'Jengibre',precioKg:19500},{nombre:'Pimienta común',precioKg:39000},{nombre:'Pimienta negra',precioKg:53000},
+    {nombre:'Pimienta blanca',precioKg:0},{nombre:'Pimienta dulce',precioKg:50500},{nombre:'Pimienta cayena',precioKg:41000},
+    {nombre:'Comino',precioKg:27000},{nombre:'Hinojo',precioKg:43500},{nombre:'Coreandro',precioKg:0},
+    {nombre:'Semillas de Cilantro',precioKg:28800},{nombre:'Fenogreco',precioKg:28800},
+    {nombre:'Semillas de Mostaza',precioKg:32000},{nombre:'Cardamomo',precioKg:0},{nombre:'Cúrcuma',precioKg:16800},
+    {nombre:'Nuez moscada',precioKg:0},{nombre:'Anís estrellado',precioKg:0},
+  ];
+  especiasData.forEach(e=>{e.id=nextId();e.stock=0;e.stockMin=500;});
+  db.especias=especiasData;
+
+  // Helper to get espId by nombre
+  const eid=(n)=>db.especias.find(e=>e.nombre===n)?.id;
+
+  const blends=[
+    {nombre:'Berbere',ingredientes:[
+      {espId:eid('Paprika'),nombre:'Paprika',gramos:300,precioKg:17000},
+      {espId:eid('Pimienta cayena'),nombre:'Pimienta cayena',gramos:200,precioKg:41000},
+      {espId:eid('Jengibre'),nombre:'Jengibre',gramos:150,precioKg:19500},
+      {espId:eid('Semillas de Cilantro'),nombre:'Semillas de Cilantro',gramos:150,precioKg:28800},
+      {espId:eid('Fenogreco'),nombre:'Fenogreco',gramos:100,precioKg:28800},
+      {espId:eid('Pimienta negra'),nombre:'Pimienta negra',gramos:50,precioKg:53000},
+      {espId:eid('Clavos'),nombre:'Clavos',gramos:50,precioKg:29000},
+    ]},
+    {nombre:'Cajún',ingredientes:[
+      {espId:eid('Paprika'),nombre:'Paprika',gramos:350,precioKg:17000},
+      {espId:eid('Ajo polvo'),nombre:'Ajo polvo',gramos:150,precioKg:17000},
+      {espId:eid('Cebolla en polvo'),nombre:'Cebolla en polvo',gramos:150,precioKg:19200},
+      {espId:eid('Pimienta negra'),nombre:'Pimienta negra',gramos:150,precioKg:53000},
+      {espId:eid('Tomillo'),nombre:'Tomillo',gramos:100,precioKg:26500},
+      {espId:eid('Pimienta cayena'),nombre:'Pimienta cayena',gramos:100,precioKg:41000},
+    ]},
+    {nombre:'Creole',ingredientes:[
+      {espId:eid('Paprika'),nombre:'Paprika',gramos:300,precioKg:17000},
+      {espId:eid('Orégano'),nombre:'Orégano',gramos:200,precioKg:20000},
+      {espId:eid('Tomillo'),nombre:'Tomillo',gramos:200,precioKg:26500},
+      {espId:eid('Ajo polvo'),nombre:'Ajo polvo',gramos:150,precioKg:17000},
+      {espId:eid('Pimienta negra'),nombre:'Pimienta negra',gramos:100,precioKg:53000},
+      {espId:eid('Pimienta cayena'),nombre:'Pimienta cayena',gramos:50,precioKg:41000},
+    ]},
+    {nombre:'Jerk Jamaicano',ingredientes:[
+      {espId:eid('Pimienta dulce'),nombre:'Pimienta dulce',gramos:350,precioKg:50500},
+      {espId:eid('Jengibre'),nombre:'Jengibre',gramos:200,precioKg:19500},
+      {espId:eid('Canela en polvo'),nombre:'Canela en polvo',gramos:150,precioKg:34000},
+      {espId:eid('Tomillo'),nombre:'Tomillo',gramos:150,precioKg:26500},
+      {espId:eid('Pimienta negra'),nombre:'Pimienta negra',gramos:100,precioKg:53000},
+      {espId:eid('Pimienta cayena'),nombre:'Pimienta cayena',gramos:50,precioKg:41000},
+    ]},
+    {nombre:'Piri Piri',ingredientes:[
+      {espId:eid('Pimienta cayena'),nombre:'Pimienta cayena',gramos:350,precioKg:41000},
+      {espId:eid('Paprika'),nombre:'Paprika',gramos:250,precioKg:17000},
+      {espId:eid('Ajo polvo'),nombre:'Ajo polvo',gramos:200,precioKg:17000},
+      {espId:eid('Orégano'),nombre:'Orégano',gramos:100,precioKg:20000},
+      {espId:eid('Pimienta negra'),nombre:'Pimienta negra',gramos:100,precioKg:53000},
+    ]},
+    {nombre:'Vegetales Asados',ingredientes:[
+      {espId:eid('Romero'),nombre:'Romero',gramos:300,precioKg:26500},
+      {espId:eid('Tomillo'),nombre:'Tomillo',gramos:250,precioKg:26500},
+      {espId:eid('Ajo polvo'),nombre:'Ajo polvo',gramos:200,precioKg:17000},
+      {espId:eid('Pimienta negra'),nombre:'Pimienta negra',gramos:150,precioKg:53000},
+      {espId:eid('Orégano'),nombre:'Orégano',gramos:100,precioKg:20000},
+    ]},
+  ];
+  blends.forEach(b=>{b.id=nextId();b.pesoChico=0;b.pesoGrande=0;b.pVentaChico=0;b.pVentaGrande=0;});
+  db.blends=blends;
+  saveDB(db);
+}
+
+// ===================== INIT =====================
+seedIfEmpty();
+renderCostos();
+</script>
+</body>
+</html>
